@@ -27,65 +27,65 @@
         }
 
         .dashboard {
-            max-width: 800px;
+            max-width: 500px; /* Slimmer mobile-friendly width */
             width: 100%;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            grid-gap: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
         }
 
         header {
-            grid-column: span 2;
             text-align: center;
             color: white;
             margin-bottom: 10px;
         }
 
-        h1 { font-size: 3.5rem; margin: 0; font-family: 'Caveat', cursive; }
+        h1 { font-size: 3.5rem; margin: 0; font-family: 'Caveat', cursive; text-shadow: 2px 2px 10px rgba(0,0,0,0.2); }
 
         .card {
             background: rgba(255, 255, 255, 0.95);
             padding: 25px;
             border-radius: 24px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            display: flex;
-            flex-direction: column;
-            min-height: 150px;
+            transition: transform 0.2s ease;
         }
 
+        .card:active { transform: scale(0.98); }
+
         .card h2 {
-            margin: 0 0 10px 0;
+            margin: 0 0 12px 0;
             font-size: 0.8rem;
             text-transform: uppercase;
             letter-spacing: 1.5px;
-            color: #666;
+            color: #888;
+            font-weight: 700;
         }
 
-        .card p { font-size: 1.1rem; line-height: 1.5; margin: 0; }
+        .card p { font-size: 1.15rem; line-height: 1.5; margin: 0; color: #333; }
 
-        .joke-card { border-left: 8px solid var(--joke-color); }
-        .quote-card { border-left: 8px solid var(--quote-color); }
-        .fact-card { border-left: 8px solid var(--fact-color); }
-        .word-card { border-left: 8px solid var(--word-color); }
+        .joke-card { border-bottom: 6px solid var(--joke-color); }
+        .quote-card { border-bottom: 6px solid var(--quote-color); }
+        .fact-card { border-bottom: 6px solid var(--fact-color); }
+        .word-card { border-bottom: 6px solid var(--word-color); }
+
+        .word-title { color: #e67e22; font-weight: 700; font-size: 1.4rem; display: block; margin-bottom: 5px; }
 
         .refresh-btn {
-            grid-column: span 2;
-            justify-self: center;
-            padding: 12px 30px;
+            align-self: center;
+            padding: 18px 45px;
             border-radius: 50px;
             border: none;
             background: #fff;
             color: #764ba2;
             font-weight: bold;
+            font-size: 1.1rem;
             cursor: pointer;
-            margin-top: 15px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            margin-top: 10px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
         }
 
-        @media (max-width: 600px) {
-            .dashboard { grid-template-columns: 1fr; }
-            header, .refresh-btn { grid-column: span 1; }
-        }
+        .refresh-btn:hover { background: #f8f8f8; box-shadow: 0 12px 25px rgba(0,0,0,0.3); }
     </style>
 </head>
 <body>
@@ -93,73 +93,73 @@
     <div class="dashboard">
         <header>
             <h1>Daily Spark ✨</h1>
-            <p id="dateText"></p>
         </header>
 
         <div class="card joke-card">
             <h2>The Laugh</h2>
-            <p id="joke">Loading...</p>
+            <p id="joke"></p>
         </div>
 
         <div class="card quote-card">
             <h2>The Vibe</h2>
-            <p id="quote">Loading...</p>
+            <p id="quote"></p>
         </div>
 
         <div class="card fact-card">
             <h2>The Brainiac</h2>
-            <p id="fact">Loading...</p>
+            <p id="fact"></p>
         </div>
 
         <div class="card word-card">
             <h2>The Vocab</h2>
-            <p id="word" style="font-weight:bold; color:#d4a017;"></p>
-            <p id="definition">Loading...</p>
+            <span id="word" class="word-title"></span>
+            <p id="definition"></p>
         </div>
 
-        <button class="refresh-btn" onclick="updateAll()">Refresh Content</button>
+        <button class="refresh-btn" onclick="updateContent()">Gimme New Stuff!</button>
     </div>
 
     <script>
-        document.getElementById('dateText').innerText = new Date().toDateString();
-
-        // Backup Content if APIs fail
-        const fallbacks = {
-            jokes: ["Why do Java developers wear glasses? Because they don't C#.", "I'm on a seafood diet. I see food and I eat it."],
-            quotes: ["'Believe you can and you're halfway there.' - T. Roosevelt", "'Make each day your masterpiece.' - John Wooden"],
-            facts: ["A shrimp's heart is located in its head.", "Snails can sleep for up to three years."],
+        const content = {
+            jokes: [
+                "What do you call a fake noodle? An Impasta!",
+                "Why don't scientists trust atoms? Because they make up everything!",
+                "I told my wife she was drawing her eyebrows too high. She looked surprised.",
+                "Parallel lines have so much in common. It’s a shame they’ll never meet."
+            ],
+            quotes: [
+                "\"Believe you can and you're halfway there.\" — T. Roosevelt",
+                "\"Your passion is waiting for your courage to catch up.\" — Isabelle Lafleche",
+                "\"Don't count the days, make the days count.\" — Muhammad Ali",
+                "\"Every moment is a fresh beginning.\" — T.S. Eliot"
+            ],
+            facts: [
+                "Honey never spoils. Archaeologists have found 3,000-year-old honey that is still edible!",
+                "Octopuses have three hearts and blue blood.",
+                "Bananas are berries, but strawberries aren't.",
+                "A day on Venus is longer than a year on Venus."
+            ],
             words: [
-                {w: "Ethereal", d: "Extremely light and delicate in a way that seems too perfect for this world."},
-                {w: "Nefarious", d: "Wicked or criminal activity."}
+                {w: "Luminous", d: "Full of or shedding light; bright or shining, especially in the dark."},
+                {w: "Resilient", d: "Able to withstand or recover quickly from difficult conditions."},
+                {w: "Euphoria", d: "A feeling or state of intense excitement and happiness."},
+                {w: "Sonder", d: "The realization that each random passerby is living a life as complex as your own."}
             ]
         };
 
-        async function updateAll() {
-            // JOKE
-            fetch('https://official-joke-api.appspot.com/random_joke')
-                .then(r => r.json())
-                .then(d => document.getElementById('joke').innerText = d.setup + " ... " + d.punchline)
-                .catch(() => document.getElementById('joke').innerText = fallbacks.jokes[Math.floor(Math.random()*2)]);
-
-            // QUOTE
-            fetch('https://api.quotable.io/random')
-                .then(r => r.json())
-                .then(d => document.getElementById('quote').innerText = `"${d.content}" — ${d.author}`)
-                .catch(() => document.getElementById('quote').innerText = fallbacks.quotes[Math.floor(Math.random()*2)]);
-
-            // FACT
-            fetch('https://uselessfacts.jsph.pl/random.json?language=en')
-                .then(r => r.json())
-                .then(d => document.getElementById('fact').innerText = d.text)
-                .catch(() => document.getElementById('fact').innerText = fallbacks.facts[Math.floor(Math.random()*2)]);
-
-            // WORD
-            const wPick = fallbacks.words[Math.floor(Math.random() * fallbacks.words.length)];
-            document.getElementById('word').innerText = wPick.w;
-            document.getElementById('definition').innerText = wPick.d;
+        function updateContent() {
+            // Pick random items from our lists
+            document.getElementById('joke').innerText = content.jokes[Math.floor(Math.random() * content.jokes.length)];
+            document.getElementById('quote').innerText = content.quotes[Math.floor(Math.random() * content.quotes.length)];
+            document.getElementById('fact').innerText = content.facts[Math.floor(Math.random() * content.facts.length)];
+            
+            const wordObj = content.words[Math.floor(Math.random() * content.words.length)];
+            document.getElementById('word').innerText = wordObj.w;
+            document.getElementById('definition').innerText = wordObj.d;
         }
 
-        updateAll();
+        // Run once on load
+        updateContent();
     </script>
 </body>
 </html>
