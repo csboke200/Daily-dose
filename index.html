@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Spark | Your Morning Dashboard</title>
+    <style>
+        :root {
+            --bg: #f0f2f5;
+            --card: #ffffff;
+            --primary: #4a90e2;
+            --text: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        header {
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        .card {
+            background: var(--card);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+            border-top: 5px solid var(--primary);
+        }
+
+        .card:hover { transform: translateY(-5px); }
+
+        h2 { color: var(--primary); font-size: 1.2rem; margin-top: 0; text-transform: uppercase; letter-spacing: 1px; }
+        p { line-height: 1.6; font-size: 1.1rem; }
+        .author { font-style: italic; color: #666; margin-top: 10px; display: block; }
+        
+        .loading { color: #999; font-style: italic; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>The Daily Spark</h1>
+        <p id="date-today"></p>
+    </header>
+
+    <div class="grid">
+        <div class="card">
+            <h2>Daily Joke</h2>
+            <p id="joke" class="loading">Loading punchlines...</p>
+        </div>
+
+        <div class="card">
+            <h2>Motivation</h2>
+            <p id="quote" class="loading">Loading wisdom...</p>
+            <span id="quote-author" class="author"></span>
+        </div>
+
+        <div class="card">
+            <h2>Fun Fact</h2>
+            <p id="fact" class="loading">Loading curiosities...</p>
+        </div>
+
+        <div class="card">
+            <h2>Word of the Day</h2>
+            <p id="word" style="font-weight: bold; font-size: 1.4rem; margin-bottom: 5px;"></p>
+            <p id="definition" class="loading">Fetching vocabulary...</p>
+        </div>
+    </div>
+
+    <script>
+        // Set the date
+        document.getElementById('date-today').innerText = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+        async function fetchDailyContent() {
+            // 1. Fetch Joke
+            try {
+                const jokeRes = await fetch('https://official-joke-api.appspot.com/random_joke');
+                const jokeData = await jokeRes.json();
+                document.getElementById('joke').innerText = `${jokeData.setup} ... ${jokeData.punchline}`;
+            } catch (e) { document.getElementById('joke').innerText = "Failed to load joke."; }
+
+            // 2. Fetch Quote
+            try {
+                // Using a proxy or a simpler API like Quotable
+                const quoteRes = await fetch('https://api.quotable.io/random');
+                const quoteData = await quoteRes.json();
+                document.getElementById('quote').innerText = `"${quoteData.content}"`;
+                document.getElementById('quote-author').innerText = `- ${quoteData.author}`;
+            } catch (e) { document.getElementById('quote').innerText = "Focus on the journey, not the destination."; }
+
+            // 3. Fetch Fact
+            try {
+                const factRes = await fetch('https://uselessfacts.jsph.pl/random.json?language=en');
+                const factData = await factRes.json();
+                document.getElementById('fact').innerText = factData.text;
+            } catch (e) { document.getElementById('fact').innerText = "Failed to load fact."; }
+
+            // 4. Word of the Day (Simulated from a curated list for better quality)
+            const words = [
+                {w: "Serendipity", d: "The occurrence of events by chance in a happy or beneficial way."},
+                {w: "Ephemeral", d: "Lasting for a very short time."},
+                {w: "Resilience", d: "The capacity to recover quickly from difficulties; toughness."},
+                {w: "Eloquence", d: "Fluent or persuasive speaking or writing."}
+            ];
+            const dailyWord = words[Math.floor(Math.random() * words.length)];
+            document.getElementById('word').innerText = dailyWord.w;
+            document.getElementById('definition').innerText = dailyWord.d;
+        }
+
+        fetchDailyContent();
+    </script>
+</body>
+</html>
